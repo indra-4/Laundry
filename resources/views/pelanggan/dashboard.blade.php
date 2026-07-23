@@ -9,34 +9,54 @@ FILE: resources/views/pelanggan/dashboard.blade.php
 @section('content')
 <div class="row g-4 mb-4">
     <div class="col-md-3">
-        <div class="card text-white bg-primary">
+        <div class="card stat-card h-100 border-0 shadow-sm" style="border-left: 4px solid #2563eb !important;">
             <div class="card-body">
-                <h6 class="card-title">Total Pesanan</h6>
-                <h2 class="mb-0">{{ $totalPesanan }}</h2>
+                <div class="d-flex justify-content-between align-items-center">
+                    <div>
+                        <h6 class="text-muted fw-medium mb-1">Total Pesanan</h6>
+                        <h2 class="fw-bold mb-0 text-dark">{{ $totalPesanan }}</h2>
+                    </div>
+                    <div class="fs-1 text-primary opacity-25"><i class="bi bi-cart-check-fill"></i></div>
+                </div>
             </div>
         </div>
     </div>
     <div class="col-md-3">
-        <div class="card text-white bg-warning">
+        <div class="card stat-card h-100 border-0 shadow-sm" style="border-left: 4px solid #f59e0b !important;">
             <div class="card-body">
-                <h6 class="card-title">Pesanan Aktif</h6>
-                <h2 class="mb-0">{{ $pesananAktif->count() }}</h2>
+                <div class="d-flex justify-content-between align-items-center">
+                    <div>
+                        <h6 class="text-muted fw-medium mb-1">Pesanan Aktif</h6>
+                        <h2 class="fw-bold mb-0 text-dark">{{ $pesananAktif->count() }}</h2>
+                    </div>
+                    <div class="fs-1 text-warning opacity-25" style="color: #f59e0b !important;"><i class="bi bi-hourglass-split"></i></div>
+                </div>
             </div>
         </div>
     </div>
     <div class="col-md-3">
-        <div class="card text-white bg-success">
+        <div class="card stat-card h-100 border-0 shadow-sm" style="border-left: 4px solid #10b981 !important;">
             <div class="card-body">
-                <h6 class="card-title">Pesanan Selesai</h6>
-                <h2 class="mb-0">{{ $riwayatPesanan->where('status', 'selesai')->count() }}</h2>
+                <div class="d-flex justify-content-between align-items-center">
+                    <div>
+                        <h6 class="text-muted fw-medium mb-1">Pesanan Selesai</h6>
+                        <h2 class="fw-bold mb-0 text-dark">{{ $riwayatPesanan->where('status', 'selesai')->count() }}</h2>
+                    </div>
+                    <div class="fs-1 text-success opacity-25" style="color: #10b981 !important;"><i class="bi bi-check-circle-fill"></i></div>
+                </div>
             </div>
         </div>
     </div>
     <div class="col-md-3">
-        <div class="card text-white bg-info">
+        <div class="card stat-card h-100 border-0 shadow-sm" style="border-left: 4px solid #0ea5e9 !important;">
             <div class="card-body">
-                <h6 class="card-title">Notifikasi Baru</h6>
-                <h2 class="mb-0">{{ $notifikasi->count() }}</h2>
+                <div class="d-flex justify-content-between align-items-center">
+                    <div>
+                        <h6 class="text-muted fw-medium mb-1">Notifikasi Baru</h6>
+                        <h2 class="fw-bold mb-0 text-dark">{{ $notifikasi->count() }}</h2>
+                    </div>
+                    <div class="fs-1 text-info opacity-25" style="color: #0ea5e9 !important;"><i class="bi bi-bell-fill"></i></div>
+                </div>
             </div>
         </div>
     </div>
@@ -44,9 +64,9 @@ FILE: resources/views/pelanggan/dashboard.blade.php
 
 <div class="row g-4">
     <div class="col-md-8">
-        <div class="card">
-            <div class="card-header d-flex justify-content-between align-items-center">
-                <h5 class="mb-0"><i class="bi bi-hourglass-split"></i> Pesanan Aktif</h5>
+        <div class="card border-0 shadow-sm">
+            <div class="card-header bg-white border-bottom py-3 d-flex justify-content-between align-items-center">
+                <h5 class="mb-0 fw-bold text-dark"><i class="bi bi-hourglass-split text-primary me-2"></i> Pesanan Aktif</h5>
                 <a href="{{ route('pelanggan.pesanan.create') }}" class="btn btn-primary btn-sm">
                     <i class="bi bi-plus-circle"></i> Buat Pesanan Baru
                 </a>
@@ -81,9 +101,9 @@ FILE: resources/views/pelanggan/dashboard.blade.php
     </div>
     
     <div class="col-md-4">
-        <div class="card">
-            <div class="card-header">
-                <h5 class="mb-0"><i class="bi bi-bell"></i> Notifikasi Terbaru</h5>
+        <div class="card border-0 shadow-sm">
+            <div class="card-header bg-white border-bottom py-3">
+                <h5 class="mb-0 fw-bold text-dark"><i class="bi bi-bell text-primary me-2"></i> Notifikasi Terbaru</h5>
             </div>
             <div class="card-body" style="max-height: 400px; overflow-y: auto;">
                 @forelse($notifikasi as $notif)
@@ -102,9 +122,9 @@ FILE: resources/views/pelanggan/dashboard.blade.php
 
 <div class="row mt-4">
     <div class="col-12">
-        <div class="card">
-            <div class="card-header">
-                <h5 class="mb-0"><i class="bi bi-clock-history"></i> Riwayat Pesanan Terbaru</h5>
+        <div class="card border-0 shadow-sm">
+            <div class="card-header bg-white border-bottom py-3">
+                <h5 class="mb-0 fw-bold text-dark"><i class="bi bi-clock-history text-primary me-2"></i> Riwayat Pesanan Terbaru</h5>
             </div>
             <div class="card-body">
                 <div class="table-responsive">

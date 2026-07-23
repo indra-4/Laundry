@@ -18,70 +18,67 @@
     <!-- AOS (Animate On Scroll) CSS -->
     <link href="https://unpkg.com/aos@2.3.1/dist/aos.css" rel="stylesheet">
     
+    <!-- Google Fonts -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+    
     @stack('styles')
     
     <style>
         body {
-            background-color: #f8f9fa;
+            font-family: 'Plus Jakarta Sans', sans-serif;
+            background-color: #f8fafc;
+            color: #1e293b;
         }
         .sidebar {
             min-height: 100vh;
-            background: linear-gradient(180deg, #4e73df 0%, #224abe 100%);
-            box-shadow: 0 0 20px rgba(0,0,0,0.1);
+            background-color: #ffffff;
+            border-right: 1px solid #e2e8f0;
         }
         .sidebar .nav-link {
-            color: rgba(255,255,255,0.8);
+            color: #64748b;
             padding: 12px 20px;
             margin: 5px 15px;
-            border-radius: 8px;
-            transition: all 0.3s ease;
-            position: relative;
-            overflow: hidden;
+            border-radius: 12px;
+            transition: all 0.2s ease;
+            font-weight: 500;
         }
-        .sidebar .nav-link::before {
-            content: '';
-            position: absolute;
-            top: 0;
-            left: -100%;
-            width: 100%;
-            height: 100%;
-            background: rgba(255,255,255,0.1);
-            transition: left 0.3s ease;
+        .sidebar .nav-link:hover {
+            background-color: #f1f5f9;
+            color: #0f172a;
         }
-        .sidebar .nav-link:hover::before {
-            left: 0;
-        }
-        .sidebar .nav-link:hover, .sidebar .nav-link.active {
-            background: rgba(255,255,255,0.2);
-            color: white;
-            transform: translateX(5px);
+        .sidebar .nav-link.active {
+            background-color: #eff6ff;
+            color: #2563eb;
         }
         .sidebar .nav-link i {
             margin-right: 10px;
             font-size: 1.1rem;
-            transition: transform 0.3s ease;
         }
-        .sidebar .nav-link:hover i {
-            transform: scale(1.2);
-        }
+        
         .card {
-            border: none;
-            box-shadow: 0 0.125rem 0.25rem rgba(0,0,0,0.075);
-            border-radius: 10px;
-            transition: all 0.3s ease;
+            border: 1px solid #e2e8f0;
+            box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.05);
+            border-radius: 16px;
+            transition: all 0.2s ease;
+            background-color: #ffffff;
         }
         .card:hover {
-            transform: translateY(-5px);
-            box-shadow: 0 0.5rem 1rem rgba(0,0,0,0.15);
+            box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.05);
+            border-color: #cbd5e1;
+            transform: translateY(-3px);
         }
         .badge-status {
             padding: 6px 12px;
             border-radius: 20px;
             font-size: 0.85rem;
+            font-weight: 600;
         }
         .navbar-brand {
-            font-weight: 700;
-            font-size: 1.5rem;
+            font-weight: 800;
+            font-size: 1.2rem;
+            color: #2563eb !important;
         }
         
         /* Page Transition Animations */
@@ -271,11 +268,11 @@
             <div class="col-md-3 col-lg-2 px-0 sidebar d-md-block d-none">
                 <div class="text-center py-4">
                     <div class="px-3 text-start">
-                        <h4 class="text-white mb-1">☁️ Awan Laundry</h4>
-                        <small class="text-white-50 d-block mb-2">{{ ucfirst(auth()->user()->role) }}</small>
+                        <h4 class="text-primary fw-bold mb-1"><i class="bi bi-cloud-fill"></i> Awan Laundry</h4>
+                        <small class="text-muted d-block mb-2 fw-medium">{{ ucfirst(auth()->user()->role) }}</small>
                         <form method="POST" action="{{ route('logout') }}">
                             @csrf
-                            <button type="submit" class="btn btn-light btn-sm">
+                            <button type="submit" class="btn btn-outline-danger btn-sm rounded-pill px-3">
                                 <i class="bi bi-box-arrow-right"></i> Logout
                             </button>
                         </form>
@@ -288,14 +285,41 @@
                 
                 <!-- removed bottom logout block -->
             </div>
+            
+            <!-- Mobile Offcanvas Sidebar -->
+            <div class="offcanvas offcanvas-start" tabindex="-1" id="sidebarMenu" aria-labelledby="sidebarMenuLabel">
+                <div class="offcanvas-header border-bottom">
+                    <h5 class="offcanvas-title text-primary fw-bold" id="sidebarMenuLabel"><i class="bi bi-cloud-fill"></i> Awan Laundry</h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="offcanvas" aria-label="Close"></button>
+                </div>
+                <div class="offcanvas-body px-0">
+                    <div class="px-4 mb-3">
+                        <small class="text-muted d-block mb-2 fw-medium">Halo, {{ auth()->user()->nama }} ({{ ucfirst(auth()->user()->role) }})</small>
+                        <form method="POST" action="{{ route('logout') }}">
+                            @csrf
+                            <button type="submit" class="btn btn-outline-danger btn-sm rounded-pill px-3 w-100">
+                                <i class="bi bi-box-arrow-right"></i> Logout
+                            </button>
+                        </form>
+                    </div>
+                    <nav class="nav flex-column sidebar-mobile-nav">
+                        @include('partials.sidebar-' . auth()->user()->role)
+                    </nav>
+                </div>
+            </div>
             @endauth
             
             <!-- Main Content -->
             <div class="col-md-9 col-lg-10 ms-sm-auto px-md-4 @guest col-12 @endguest">
                 <!-- Topbar -->
                 @auth
-                <div class="d-flex justify-content-between flex-wrap flex-md-nowrap align-items-center pt-3 pb-2 mb-3 border-bottom">
-                    <h1 class="h2">@yield('page-title', 'Dashboard')</h1>
+                <div class="d-flex justify-content-between flex-wrap flex-md-nowrap align-items-center pt-3 pb-2 mb-3 border-bottom navbar-top">
+                    <div class="d-flex align-items-center gap-2">
+                        <button class="btn btn-light d-md-none border" type="button" data-bs-toggle="offcanvas" data-bs-target="#sidebarMenu" aria-controls="sidebarMenu">
+                            <i class="bi bi-list fs-5"></i>
+                        </button>
+                        <h1 class="h2 mb-0">@yield('page-title', 'Dashboard')</h1>
+                    </div>
                     <div class="btn-toolbar mb-2 mb-md-0">
                         <div class="btn-group me-2">
                             <div class="dropdown">
@@ -376,10 +400,8 @@
         
         // Show loader on page navigation
         document.addEventListener('DOMContentLoaded', function() {
-            // Hide loader after page loads
-            setTimeout(() => {
-                pageLoader.classList.remove('active');
-            }, 300);
+            // Hide loader immediately
+            pageLoader.classList.remove('active');
             
             // Add click handlers to all links
             const links = document.querySelectorAll('a[href^="/"], a[href^="http"]');

@@ -5,34 +5,54 @@
 @section('content')
 <div class="row g-4 mb-4">
     <div class="col-md-3" data-aos="fade-up" data-aos-delay="0">
-        <div class="card text-white bg-primary stat-card">
+        <div class="card stat-card h-100 border-0 shadow-sm" style="border-left: 4px solid #2563eb !important;">
             <div class="card-body">
-                <h6>Pesanan Bulan Ini</h6>
-                <h2>{{ $statistik['total_pesanan_bulan_ini'] }}</h2>
+                <div class="d-flex justify-content-between align-items-center">
+                    <div>
+                        <h6 class="text-muted fw-medium mb-1">Pesanan Bulan Ini</h6>
+                        <h2 class="fw-bold mb-0 text-dark">{{ $statistik['total_pesanan_bulan_ini'] }}</h2>
+                    </div>
+                    <div class="fs-1 text-primary opacity-25"><i class="bi bi-cart-check-fill"></i></div>
+                </div>
             </div>
         </div>
     </div>
     <div class="col-md-3" data-aos="fade-up" data-aos-delay="100">
-        <div class="card text-white bg-success stat-card">
+        <div class="card stat-card h-100 border-0 shadow-sm" style="border-left: 4px solid #10b981 !important;">
             <div class="card-body">
-                <h6>Pendapatan Bulan Ini</h6>
-                <h2>Rp {{ number_format($statistik['total_pendapatan_bulan_ini'], 0, ',', '.') }}</h2>
+                <div class="d-flex justify-content-between align-items-center">
+                    <div>
+                        <h6 class="text-muted fw-medium mb-1">Pendapatan Bulan Ini</h6>
+                        <h3 class="fw-bold mb-0 text-dark">Rp {{ number_format($statistik['total_pendapatan_bulan_ini'], 0, ',', '.') }}</h3>
+                    </div>
+                    <div class="fs-1 text-success opacity-25" style="color: #10b981 !important;"><i class="bi bi-wallet2"></i></div>
+                </div>
             </div>
         </div>
     </div>
     <div class="col-md-3" data-aos="fade-up" data-aos-delay="200">
-        <div class="card text-white bg-warning stat-card">
+        <div class="card stat-card h-100 border-0 shadow-sm" style="border-left: 4px solid #f59e0b !important;">
             <div class="card-body">
-                <h6>Pesanan Hari Ini</h6>
-                <h2>{{ $statistik['pesanan_hari_ini'] }}</h2>
+                <div class="d-flex justify-content-between align-items-center">
+                    <div>
+                        <h6 class="text-muted fw-medium mb-1">Pesanan Hari Ini</h6>
+                        <h2 class="fw-bold mb-0 text-dark">{{ $statistik['pesanan_hari_ini'] }}</h2>
+                    </div>
+                    <div class="fs-1 text-warning opacity-25" style="color: #f59e0b !important;"><i class="bi bi-basket-fill"></i></div>
+                </div>
             </div>
         </div>
     </div>
     <div class="col-md-3" data-aos="fade-up" data-aos-delay="300">
-        <div class="card text-white bg-info stat-card">
+        <div class="card stat-card h-100 border-0 shadow-sm" style="border-left: 4px solid #0ea5e9 !important;">
             <div class="card-body">
-                <h6>Pelanggan Aktif</h6>
-                <h2>{{ $statistik['pelanggan_aktif'] }}</h2>
+                <div class="d-flex justify-content-between align-items-center">
+                    <div>
+                        <h6 class="text-muted fw-medium mb-1">Pelanggan Aktif</h6>
+                        <h2 class="fw-bold mb-0 text-dark">{{ $statistik['pelanggan_aktif'] }}</h2>
+                    </div>
+                    <div class="fs-1 text-info opacity-25" style="color: #0ea5e9 !important;"><i class="bi bi-people-fill"></i></div>
+                </div>
             </div>
         </div>
     </div>
@@ -40,9 +60,9 @@
 
 <div class="row g-4 mb-4">
     <div class="col-md-12" data-aos="fade-up" data-aos-delay="400">
-        <div class="card">
-            <div class="card-header">
-                <h5><i class="bi bi-pie-chart"></i> Status Pesanan</h5>
+        <div class="card border-0 shadow-sm">
+            <div class="card-header bg-white border-bottom py-3">
+                <h5 class="mb-0 fw-bold text-dark"><i class="bi bi-pie-chart text-primary me-2"></i>Status Pesanan</h5>
             </div>
             <div class="card-body">
                 @php
@@ -131,9 +151,9 @@
 
 <div class="row g-4">
     <div class="col-12" data-aos="fade-up" data-aos-delay="500">
-        <div class="card">
-            <div class="card-header">
-                <h5><i class="bi bi-clock-history"></i> Pesanan Terbaru</h5>
+        <div class="card border-0 shadow-sm">
+            <div class="card-header bg-white border-bottom py-3">
+                <h5 class="mb-0 fw-bold text-dark"><i class="bi bi-clock-history text-primary me-2"></i>Pesanan Terbaru</h5>
             </div>
             <div class="card-body">
                 <div class="table-responsive">
