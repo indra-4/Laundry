@@ -68,16 +68,22 @@ foreach ($envConfig as $key => $value) {
     }
 }
 
-// Build Neon-compatible DB_URL with endpoint ID + SSL
-// Needed because Vercel's libpq doesn't support SNI for endpoint routing
 $dbUser = getenv('DB_USERNAME') ?: 'neondb_owner';
 $dbPass = getenv('DB_PASSWORD') ?: 'npg_k1LtrzsfC2En';
 $dbHost = getenv('DB_HOST') ?: 'ep-bold-wind-axkutgxv.c-4.us-east-2.aws.neon.tech';
 $dbName = getenv('DB_DATABASE') ?: 'neondb';
 $endpointId = explode('.', $dbHost)[0]; // e.g. ep-bold-wind-axkutgxv
 
-// Force overwrite DB_URL to guarantee our endpoint parameter and sslmode are passed
-$neonUrl = "pgsql://{$dbUser}:" . rawurlencode($dbPass) . "@{$dbHost}:5432/{$dbName}?sslmode=require&options=endpoint%3D{$endpointId}";
+// Pass the Neon endpoint ID by hijacking the sslmode parameter.
+// This works because Laravel's PostgresConnector blindly concatenates ssl parameters.
+// This prevents the "options" query parameter from corrupting Laravel's PDO options array.
+$neonSslMode = "require;options=endpoint={$endpointId}";
+putenv("DB_SSLMODE={$neonSslMode}");
+$_ENV['DB_SSLMODE'] = $neonSslMode;
+$_SERVER['DB_SSLMODE'] = $neonSslMode;
+
+// Force overwrite DB_URL without query string parameters
+$neonUrl = "pgsql://{$dbUser}:" . rawurlencode($dbPass) . "@{$dbHost}:5432/{$dbName}";
 putenv("DB_URL={$neonUrl}");
 $_ENV['DB_URL'] = $neonUrl;
 $_SERVER['DB_URL'] = $neonUrl;
