@@ -38,7 +38,7 @@ $envConfig = [
     'APP_NAME'             => 'AwnLaundry',
     'APP_ENV'              => 'production',
     'APP_KEY'              => 'base64:Cjbl2K4OKyEvi9rkoLAhERaHjgFDxAkB4Pg3E2Dpl+U=',
-    'APP_DEBUG'            => 'true',
+    'APP_DEBUG'            => 'false',
     'APP_URL'              => 'https://laundry-ashen-two.vercel.app',
     // Database (Neon PostgreSQL)
     'DB_CONNECTION'        => 'pgsql',
@@ -47,6 +47,7 @@ $envConfig = [
     'DB_DATABASE'          => 'neondb',
     'DB_USERNAME'          => 'neondb_owner',
     'DB_PASSWORD'          => 'npg_k1LtrzsfC2En',
+    'DB_SSLMODE'           => 'require',
     // Serverless-compatible drivers (FORCED — these must not use file/database on Vercel)
     'SESSION_DRIVER'       => 'cookie',
     'CACHE_STORE'          => 'array',
@@ -59,12 +60,26 @@ $envConfig = [
 
 foreach ($envConfig as $key => $value) {
     // For serverless drivers, always force the safe value
-    $forceKeys = ['SESSION_DRIVER', 'CACHE_STORE', 'LOG_CHANNEL', 'QUEUE_CONNECTION', 'APP_DEBUG'];
+    $forceKeys = ['SESSION_DRIVER', 'CACHE_STORE', 'LOG_CHANNEL', 'QUEUE_CONNECTION', 'DB_SSLMODE'];
     if (in_array($key, $forceKeys) || !getenv($key)) {
         putenv("$key=$value");
         $_ENV[$key] = $value;
         $_SERVER[$key] = $value;
     }
+}
+
+// Build Neon-compatible DB_URL with endpoint ID + SSL
+// Needed because Vercel's libpq doesn't support SNI for endpoint routing
+if (!getenv('DB_URL')) {
+    $dbUser = getenv('DB_USERNAME') ?: 'neondb_owner';
+    $dbPass = getenv('DB_PASSWORD') ?: 'npg_k1LtrzsfC2En';
+    $dbHost = getenv('DB_HOST') ?: 'ep-bold-wind-axkutgxv.c-4.us-east-2.aws.neon.tech';
+    $dbName = getenv('DB_DATABASE') ?: 'neondb';
+    $endpointId = explode('.', $dbHost)[0]; // e.g. ep-bold-wind-axkutgxv
+    $neonUrl = "pgsql://{$dbUser}:" . rawurlencode($dbPass) . "@{$dbHost}:5432/{$dbName}?sslmode=require&options=endpoint%3D{$endpointId}";
+    putenv("DB_URL={$neonUrl}");
+    $_ENV['DB_URL'] = $neonUrl;
+    $_SERVER['DB_URL'] = $neonUrl;
 }
 
 // ============================================================
