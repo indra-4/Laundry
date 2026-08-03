@@ -43,6 +43,11 @@ Route::middleware('guest')->group(function () {
 
 Route::post('/logout', [LoginController::class, 'logout'])->name('logout')->middleware('auth');
 
+// Invoice Route (Accessible by all roles, authorized inside controller)
+Route::get('/pesanan/{id}/invoice', [\App\Http\Controllers\InvoiceController::class, 'show'])
+    ->middleware('auth')
+    ->name('pesanan.invoice');
+
 // Pelanggan Routes
 Route::middleware(['auth', 'role:pelanggan'])->prefix('pelanggan')->name('pelanggan.')->group(function () {
     Route::get('/dashboard', [PelangganDashboardController::class, 'index'])->name('dashboard');

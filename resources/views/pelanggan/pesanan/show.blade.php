@@ -5,8 +5,11 @@
 <div class="row g-4">
     <div class="col-md-8">
         <div class="card mb-4">
-            <div class="card-header bg-primary text-white">
+            <div class="card-header bg-primary text-white d-flex justify-content-between align-items-center">
                 <h5 class="mb-0"><i class="bi bi-receipt"></i> Detail Pesanan</h5>
+                <a href="{{ route('pesanan.invoice', $pesanan->pesanan_id) }}" class="btn btn-sm btn-light text-primary fw-bold rounded-pill shadow-sm" target="_blank">
+                    <i class="bi bi-printer"></i> Cetak Struk
+                </a>
             </div>
             <div class="card-body">
                 <div class="row mb-3">
