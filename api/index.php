@@ -53,9 +53,9 @@ try {
     $app->handleRequest(Illuminate\Http\Request::capture());
 
 } catch (\Throwable $e) {
-    // Show the real error so we can fix it
+    // Use 200 so Vercel doesn't intercept and hide the real error text
     ob_end_clean();
-    http_response_code(500);
+    http_response_code(200);
     header('Content-Type: text/plain; charset=utf-8');
     echo "=== LARAVEL ERROR ===\n";
     echo $e->getMessage() . "\n\n";
