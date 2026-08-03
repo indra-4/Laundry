@@ -8,6 +8,8 @@ namespace App\Http\Controllers\Auth;
 use App\Http\Controllers\Controller;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\RateLimiter;
+use Illuminate\Support\Str;
 
 class LoginController extends Controller
 {
@@ -23,8 +25,18 @@ class LoginController extends Controller
             'password' => 'required',
         ]);
 
+        $throttleKey = Str::lower($request->input('email')).'|'.$request->ip();
+
+        if (RateLimiter::tooManyAttempts($throttleKey, 5)) {
+            $seconds = RateLimiter::availableIn($throttleKey);
+            return back()->withErrors([
+                'email' => "Terlalu banyak percobaan login. Silakan coba lagi dalam {$seconds} detik.",
+            ])->onlyInput('email');
+        }
+
         try {
             if (Auth::attempt($credentials, $request->filled('remember'))) {
+                RateLimiter::clear($throttleKey);
                 $request->session()->regenerate();
 
                 $user = Auth::user();
@@ -49,6 +61,8 @@ class LoginController extends Controller
             // Re-throw if it's a different RuntimeException
             throw $e;
         }
+
+        RateLimiter::hit($throttleKey, 60); // 60 seconds lockout after 5 attempts
 
         return back()->withErrors([
             'email' => 'Email atau password salah.',

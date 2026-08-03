@@ -25,7 +25,6 @@ class RegisterController extends Controller
             'password' => 'required|string|min:8|confirmed',
             'no_hp' => 'required|string|max:15',
             'alamat' => 'required|string',
-            'role' => 'required|in:pelanggan,karyawan,kurir,pemilik',
         ]);
 
         $user = User::create([
@@ -34,22 +33,12 @@ class RegisterController extends Controller
             'password' => $validated['password'], // User model has 'hashed' cast, so it will auto-hash
             'no_hp' => $validated['no_hp'],
             'alamat' => $validated['alamat'],
-            'role' => $validated['role'],
+            'role' => 'pelanggan', // Hardcoded for security, new users are always customers
             'is_active' => true,
         ]);
 
         Auth::login($user);
 
-        // Redirect based on role
-        $roleRoutes = [
-            'pelanggan' => 'pelanggan.dashboard',
-            'karyawan' => 'karyawan.dashboard',
-            'kurir' => 'kurir.dashboard',
-            'pemilik' => 'pemilik.dashboard',
-        ];
-
-        $redirectRoute = $roleRoutes[$validated['role']] ?? 'pelanggan.dashboard';
-
-        return redirect()->route($redirectRoute)->with('success', 'Registrasi berhasil! Selamat datang di Awan Laundry.');
+        return redirect()->route('pelanggan.dashboard')->with('success', 'Registrasi berhasil! Selamat datang di Awan Laundry.');
     }
 }

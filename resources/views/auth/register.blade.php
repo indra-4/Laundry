@@ -153,20 +153,7 @@
                         @enderror
                     </div>
                     
-                    <div class="mb-3">
-                        <label for="role" class="form-label fw-medium">Daftar Sebagai</label>
-                        <select class="form-select @error('role') is-invalid @enderror" 
-                                id="role" name="role" required>
-                            <option value="">Pilih Role...</option>
-                            <option value="pelanggan" {{ old('role') == 'pelanggan' ? 'selected' : '' }}>Pelanggan</option>
-                            <option value="karyawan" {{ old('role') == 'karyawan' ? 'selected' : '' }}>Karyawan</option>
-                            <option value="kurir" {{ old('role') == 'kurir' ? 'selected' : '' }}>Kurir</option>
-                            <option value="pemilik" {{ old('role') == 'pemilik' ? 'selected' : '' }}>Pemilik (Admin)</option>
-                        </select>
-                        @error('role')
-                            <div class="invalid-feedback">{{ $message }}</div>
-                        @enderror
-                    </div>
+                    <!-- Role selection removed for security. New users default to 'pelanggan' (customer) -->
                     
                     <div class="row">
                         <div class="col-md-6 mb-3">
