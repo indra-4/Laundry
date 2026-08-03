@@ -187,6 +187,85 @@
     </div>
 </div>
 
+<div class="row g-4 mt-1">
+    <div class="col-md-8" data-aos="fade-up" data-aos-delay="600">
+        <div class="card border-0 shadow-sm h-100">
+            <div class="card-header bg-white border-bottom py-3">
+                <h5 class="mb-0 fw-bold text-dark"><i class="bi bi-graph-up text-primary me-2"></i>Pendapatan 7 Hari Terakhir</h5>
+            </div>
+            <div class="card-body">
+                <canvas id="revenueChart" height="100"></canvas>
+            </div>
+        </div>
+    </div>
+    <div class="col-md-4" data-aos="fade-up" data-aos-delay="700">
+        <div class="card border-0 shadow-sm h-100">
+            <div class="card-header bg-white border-bottom py-3">
+                <h5 class="mb-0 fw-bold text-dark"><i class="bi bi-star text-warning me-2"></i>Top 5 Layanan</h5>
+            </div>
+            <div class="card-body d-flex align-items-center justify-content-center">
+                <canvas id="servicesChart" height="250"></canvas>
+            </div>
+        </div>
+    </div>
+</div>
+
 @push('scripts')
+<script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+<script>
+    document.addEventListener('DOMContentLoaded', function() {
+        // Data Pendapatan
+        const revData = @json($pendapatanHarian);
+        const revLabels = revData.map(item => item.tanggal);
+        const revValues = revData.map(item => item.total);
+
+        new Chart(document.getElementById('revenueChart'), {
+            type: 'line',
+            data: {
+                labels: revLabels,
+                datasets: [{
+                    label: 'Pendapatan (Rp)',
+                    data: revValues,
+                    borderColor: '#3b82f6',
+                    backgroundColor: 'rgba(59, 130, 246, 0.1)',
+                    borderWidth: 3,
+                    fill: true,
+                    tension: 0.4
+                }]
+            },
+            options: {
+                responsive: true,
+                plugins: { legend: { display: false } },
+                scales: {
+                    y: { beginAtZero: true, ticks: { callback: function(value) { return 'Rp ' + value.toLocaleString('id-ID'); } } }
+                }
+            }
+        });
+
+        // Data Top Layanan
+        const topData = @json($topLayanan);
+        const topLabels = topData.map(item => item.layanan.nama_layanan);
+        const topValues = topData.map(item => item.total);
+
+        new Chart(document.getElementById('servicesChart'), {
+            type: 'doughnut',
+            data: {
+                labels: topLabels,
+                datasets: [{
+                    data: topValues,
+                    backgroundColor: ['#3b82f6', '#10b981', '#f59e0b', '#0ea5e9', '#8b5cf6'],
+                    borderWidth: 0
+                }]
+            },
+            options: {
+                responsive: true,
+                cutout: '70%',
+                plugins: {
+                    legend: { position: 'bottom' }
+                }
+            }
+        });
+    });
+</script>
 @endpush
 @endsection
