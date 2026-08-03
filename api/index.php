@@ -38,7 +38,7 @@ $envConfig = [
     'APP_NAME'             => 'AwnLaundry',
     'APP_ENV'              => 'production',
     'APP_KEY'              => 'base64:Cjbl2K4OKyEvi9rkoLAhERaHjgFDxAkB4Pg3E2Dpl+U=',
-    'APP_DEBUG'            => 'false',
+    'APP_DEBUG'            => 'true',
     'APP_URL'              => 'https://laundry-ashen-two.vercel.app',
     // Database (Neon PostgreSQL)
     'DB_CONNECTION'        => 'pgsql',
@@ -59,7 +59,7 @@ $envConfig = [
 
 foreach ($envConfig as $key => $value) {
     // For serverless drivers, always force the safe value
-    $forceKeys = ['SESSION_DRIVER', 'CACHE_STORE', 'LOG_CHANNEL', 'QUEUE_CONNECTION'];
+    $forceKeys = ['SESSION_DRIVER', 'CACHE_STORE', 'LOG_CHANNEL', 'QUEUE_CONNECTION', 'APP_DEBUG'];
     if (in_array($key, $forceKeys) || !getenv($key)) {
         putenv("$key=$value");
         $_ENV[$key] = $value;
