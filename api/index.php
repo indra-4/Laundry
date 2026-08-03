@@ -73,7 +73,20 @@ foreach ($envConfig as $key => $value) {
 try {
     require __DIR__.'/../vendor/autoload.php';
 
+    // Copy bootstrap/cache to writable /tmp location so Laravel can write services.php
+    $tmpBootstrap = '/tmp/bootstrap';
+    if (!is_dir($tmpBootstrap.'/cache')) {
+        mkdir($tmpBootstrap.'/cache', 0777, true);
+    }
+    // Copy our production packages.php to the writable location
+    $pkgSrc = __DIR__.'/../bootstrap/cache/packages.php';
+    $pkgDst = $tmpBootstrap.'/cache/packages.php';
+    if (file_exists($pkgSrc) && !file_exists($pkgDst)) {
+        copy($pkgSrc, $pkgDst);
+    }
+
     $app = require_once __DIR__.'/../bootstrap/app.php';
+    $app->useBootstrapPath($tmpBootstrap);
     $app->useStoragePath('/tmp/storage');
 
     ob_end_clean();
