@@ -254,13 +254,91 @@
             }
         }
         
+        /* Role Specific Themes */
+        
+        /* Pemilik (Owner) - Dark Professional */
+        .role-pemilik .sidebar {
+            background-color: #1e293b;
+            border-right: none;
+            color: #f8fafc;
+        }
+        .role-pemilik .sidebar .text-primary {
+            color: #60a5fa !important;
+        }
+        .role-pemilik .sidebar .text-muted {
+            color: #94a3b8 !important;
+        }
+        .role-pemilik .sidebar .nav-link {
+            color: #cbd5e1;
+        }
+        .role-pemilik .sidebar .nav-link:hover {
+            background-color: rgba(255,255,255,0.05);
+            color: #ffffff;
+        }
+        .role-pemilik .sidebar .nav-link.active {
+            background-color: #3b82f6;
+            color: #ffffff;
+            box-shadow: 0 4px 6px -1px rgba(59, 130, 246, 0.4);
+        }
+
+        /* Pelanggan (Customer) - Fresh Green */
+        .role-pelanggan .sidebar {
+            background-color: #f0fdf4;
+            border-right: 1px solid #bbf7d0;
+        }
+        .role-pelanggan .sidebar .text-primary {
+            color: #16a34a !important;
+        }
+        .role-pelanggan .sidebar .nav-link {
+            color: #475569;
+        }
+        .role-pelanggan .sidebar .nav-link:hover {
+            background-color: #dcfce7;
+            color: #166534;
+        }
+        .role-pelanggan .sidebar .nav-link.active {
+            background-color: #22c55e;
+            color: #ffffff;
+            box-shadow: 0 4px 6px -1px rgba(34, 197, 94, 0.4);
+        }
+        
+        /* Kurir (Driver) - Warm Yellow/Orange */
+        .role-kurir .sidebar {
+            background-color: #fffbeb;
+            border-right: 1px solid #fde68a;
+        }
+        .role-kurir .sidebar .text-primary {
+            color: #d97706 !important;
+        }
+        .role-kurir .sidebar .nav-link {
+            color: #475569;
+        }
+        .role-kurir .sidebar .nav-link:hover {
+            background-color: #fef3c7;
+            color: #b45309;
+        }
+        .role-kurir .sidebar .nav-link.active {
+            background-color: #f59e0b;
+            color: #ffffff;
+            box-shadow: 0 4px 6px -1px rgba(245, 158, 11, 0.4);
+        }
+        
+        /* Glassmorphism Classes */
+        .glass-card {
+            background: rgba(255, 255, 255, 0.7);
+            backdrop-filter: blur(10px);
+            -webkit-backdrop-filter: blur(10px);
+            border: 1px solid rgba(255, 255, 255, 0.3);
+            box-shadow: 0 8px 32px 0 rgba(31, 38, 135, 0.07);
+        }
+
         /* Smooth Scroll */
         html {
             scroll-behavior: smooth;
         }
     </style>
 </head>
-<body>
+<body class="@auth role-{{ auth()->user()->role }} @endauth">
     <div class="container-fluid">
         <div class="row">
             <!-- Sidebar -->

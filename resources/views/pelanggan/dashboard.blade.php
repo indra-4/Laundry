@@ -64,37 +64,56 @@ FILE: resources/views/pelanggan/dashboard.blade.php
 
 <div class="row g-4">
     <div class="col-md-8">
-        <div class="card border-0 shadow-sm">
-            <div class="card-header bg-white border-bottom py-3 d-flex justify-content-between align-items-center">
-                <h5 class="mb-0 fw-bold text-dark"><i class="bi bi-hourglass-split text-primary me-2"></i> Pesanan Aktif</h5>
-                <a href="{{ route('pelanggan.pesanan.create') }}" class="btn btn-primary btn-sm">
+        <div class="card glass-card border-0 shadow-sm">
+            <div class="card-header bg-transparent border-bottom py-3 d-flex justify-content-between align-items-center">
+                <h5 class="mb-0 fw-bold text-dark"><i class="bi bi-hourglass-split text-primary me-2"></i> Pantau Pesanan Aktif</h5>
+                <a href="{{ route('pelanggan.pesanan.create') }}" class="btn btn-primary btn-sm rounded-pill px-3 shadow-sm">
                     <i class="bi bi-plus-circle"></i> Buat Pesanan Baru
                 </a>
             </div>
             <div class="card-body">
                 @forelse($pesananAktif as $pesanan)
-                    <div class="border-bottom pb-3 mb-3">
-                        <div class="d-flex justify-content-between align-items-start">
+                    @php $progress = $pesanan->progress_data; @endphp
+                    <div class="border-bottom pb-4 mb-4">
+                        <div class="d-flex justify-content-between align-items-start mb-3">
                             <div>
-                                <h6 class="mb-1">{{ $pesanan->kode_booking }}</h6>
-                                <p class="text-muted mb-1">{{ $pesanan->layanan->nama_layanan }}</p>
-                                <small class="text-muted">{{ $pesanan->created_at->format('d M Y, H:i') }}</small>
+                                <h6 class="mb-1 fw-bold fs-5">{{ $pesanan->kode_booking }}</h6>
+                                <p class="text-muted mb-1"><i class="bi bi-basket me-1"></i> {{ $pesanan->layanan->nama_layanan }}</p>
+                                <small class="text-muted"><i class="bi bi-calendar-event me-1"></i> {{ $pesanan->created_at->format('d M Y, H:i') }}</small>
                             </div>
                             <div class="text-end">
-                                <span class="badge bg-{{ $pesanan->status_badge }}">
-                                    {{ str_replace('_', ' ', ucfirst($pesanan->status)) }}
-                                </span>
-                                <div class="mt-2">
-                                    <a href="{{ route('pelanggan.pesanan.show', $pesanan->pesanan_id) }}" 
-                                       class="btn btn-sm btn-outline-primary">
-                                        <i class="bi bi-eye"></i> Detail
-                                    </a>
-                                </div>
+                                <a href="{{ route('pelanggan.pesanan.show', $pesanan->pesanan_id) }}" 
+                                   class="btn btn-sm btn-outline-primary rounded-pill px-3 mb-2">
+                                    <i class="bi bi-eye"></i> Detail
+                                </a>
+                            </div>
+                        </div>
+                        
+                        <!-- Visual Timeline / Progress Bar -->
+                        <div class="mt-2">
+                            <div class="d-flex justify-content-between mb-1">
+                                <small class="fw-semibold text-{{ $progress['color'] }}">{{ $progress['label'] }}</small>
+                                <small class="text-muted">{{ $progress['percent'] }}%</small>
+                            </div>
+                            <div class="progress" style="height: 10px; border-radius: 10px; background-color: #e2e8f0;">
+                                <div class="progress-bar bg-{{ $progress['color'] }} progress-bar-striped progress-bar-animated" 
+                                     role="progressbar" 
+                                     style="width: {{ $progress['percent'] }}%; border-radius: 10px;" 
+                                     aria-valuenow="{{ $progress['percent'] }}" aria-valuemin="0" aria-valuemax="100"></div>
                             </div>
                         </div>
                     </div>
                 @empty
-                    <p class="text-center text-muted py-4">Tidak ada pesanan aktif</p>
+                    <div class="text-center py-5">
+                        <div class="mb-3">
+                            <i class="bi bi-box-seam text-muted" style="font-size: 3rem; opacity: 0.5;"></i>
+                        </div>
+                        <h6 class="fw-bold text-dark">Tidak ada pesanan aktif saat ini</h6>
+                        <p class="text-muted mb-4">Pakaian kotor menumpuk? Yuk, buat pesanan sekarang!</p>
+                        <a href="{{ route('pelanggan.pesanan.create') }}" class="btn btn-primary rounded-pill px-4">
+                            Pesan Laundry
+                        </a>
+                    </div>
                 @endforelse
             </div>
         </div>

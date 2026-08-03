@@ -109,4 +109,24 @@ class Pesanan extends Model
 
         return $badges[$this->status] ?? 'secondary';
     }
+
+    public function getProgressDataAttribute()
+    {
+        $statuses = [
+            'pending' => ['percent' => 5, 'label' => 'Menunggu Konfirmasi', 'color' => 'secondary'],
+            'menunggu_penjemputan' => ['percent' => 15, 'label' => 'Menunggu Penjemputan', 'color' => 'info'],
+            'dijemput' => ['percent' => 25, 'label' => 'Sedang Dijemput', 'color' => 'primary'],
+            'ditimbang' => ['percent' => 35, 'label' => 'Proses Penimbangan', 'color' => 'primary'],
+            'dicuci' => ['percent' => 50, 'label' => 'Sedang Dicuci', 'color' => 'warning'],
+            'dikeringkan' => ['percent' => 65, 'label' => 'Proses Pengeringan', 'color' => 'warning'],
+            'disetrika' => ['percent' => 75, 'label' => 'Proses Setrika', 'color' => 'warning'],
+            'dikemas' => ['percent' => 85, 'label' => 'Proses Pengemasan', 'color' => 'warning'],
+            'siap_antar' => ['percent' => 90, 'label' => 'Siap Diantar', 'color' => 'info'],
+            'diantar' => ['percent' => 95, 'label' => 'Sedang Diantar Kurir', 'color' => 'primary'],
+            'selesai' => ['percent' => 100, 'label' => 'Selesai', 'color' => 'success'],
+            'dibatalkan' => ['percent' => 100, 'label' => 'Dibatalkan', 'color' => 'danger'],
+        ];
+
+        return $statuses[$this->status] ?? ['percent' => 0, 'label' => 'Unknown', 'color' => 'secondary'];
+    }
 }
