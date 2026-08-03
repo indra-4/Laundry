@@ -1,40 +1,65 @@
 <?php
 
-// Capture all output — prevents warning text from corrupting HTTP response
+// Buffer ALL output so no stray bytes corrupt HTTP headers
 ob_start();
 
-// Suppress ALL notices/warnings at PHP level before anything loads
-error_reporting(E_ALL & ~E_DEPRECATED & ~E_USER_DEPRECATED & ~E_NOTICE & ~E_WARNING);
+// Kill deprecated/notice output at PHP level
+error_reporting(E_ALL & ~E_DEPRECATED & ~E_USER_DEPRECATED & ~E_NOTICE);
 ini_set('display_errors', '0');
 ini_set('log_errors', '1');
 
 define('LARAVEL_START', microtime(true));
 
-// Create writable directories in /tmp for Vercel's read-only filesystem
-$dirs = [
+// --- VERCEL WRITABLE STORAGE ---
+// Vercel filesystem is read-only except /tmp
+foreach ([
     '/tmp/storage/app/public',
     '/tmp/storage/framework/cache/data',
     '/tmp/storage/framework/sessions',
     '/tmp/storage/framework/views',
     '/tmp/storage/logs',
-];
-foreach ($dirs as $dir) {
+] as $dir) {
     if (!is_dir($dir)) {
         mkdir($dir, 0777, true);
     }
 }
 
-// Register the Composer autoloader
+// --- FORCE CORRECT ENV FOR SERVERLESS ---
+// These override any wrong values to ensure serverless-compatible config
+$forceEnv = [
+    'SESSION_DRIVER'       => 'cookie',
+    'CACHE_STORE'          => 'array',
+    'LOG_CHANNEL'          => 'stderr',
+    'QUEUE_CONNECTION'     => 'sync',
+    'BROADCAST_CONNECTION' => 'log',
+    'FILESYSTEM_DISK'      => 'local',
+];
+foreach ($forceEnv as $k => $v) {
+    putenv("$k=$v");
+    $_ENV[$k] = $v;
+    $_SERVER[$k] = $v;
+}
+
+// --- BOOTSTRAP LARAVEL ---
 require __DIR__.'/../vendor/autoload.php';
 
-// Bootstrap Laravel
-$app = require_once __DIR__.'/../bootstrap/app.php';
+try {
+    $app = require_once __DIR__.'/../bootstrap/app.php';
+    $app->useStoragePath('/tmp/storage');
 
-// Point Laravel's storage to /tmp
-$app->useStoragePath('/tmp/storage');
+    // Discard any stray output (deprecation warnings etc.) before sending response
+    ob_end_clean();
 
-// Clear the output buffer before Laravel sends the real response
-ob_end_clean();
+    $app->handleRequest(Illuminate\Http\Request::capture());
 
-// Handle the request
-$app->handleRequest(Illuminate\Http\Request::capture());
+} catch (\Throwable $e) {
+    // Show the real error so we can fix it
+    ob_end_clean();
+    http_response_code(500);
+    header('Content-Type: text/plain; charset=utf-8');
+    echo "=== LARAVEL ERROR ===\n";
+    echo $e->getMessage() . "\n\n";
+    echo "File: " . $e->getFile() . " (line " . $e->getLine() . ")\n\n";
+    echo $e->getTraceAsString();
+}
+
