@@ -401,13 +401,13 @@
                     <div class="btn-toolbar mb-2 mb-md-0">
                         <div class="btn-group me-2">
                             <div class="dropdown">
-                                <button class="btn btn-light dropdown-toggle" type="button" data-bs-toggle="dropdown">
+                                <button class="btn btn-light dropdown-toggle" type="button" data-bs-toggle="dropdown" id="notifDropdownToggle">
                                     <i class="bi bi-bell"></i>
-                                    <span class="badge bg-danger">{{ auth()->user()->notifikasi()->unread()->count() }}</span>
+                                    <span class="badge bg-danger" id="notifBadge">{{ auth()->user()->notifikasi()->unread()->count() }}</span>
                                 </button>
-                                <ul class="dropdown-menu dropdown-menu-end" style="width: 300px; max-height: 400px; overflow-y: auto;">
+                                <ul class="dropdown-menu dropdown-menu-end" id="notifList" style="width: 300px; max-height: 400px; overflow-y: auto;">
                                     @forelse(auth()->user()->notifikasi()->unread()->latest()->take(5)->get() as $notif)
-                                        <li>
+                                        <li data-notif-id="{{ $notif->notifikasi_id }}">
                                             <div class="dropdown-item-text">
                                                 <strong>{{ $notif->judul }}</strong>
                                                 <p class="mb-0 small text-muted">{{ $notif->pesan }}</p>
@@ -416,7 +416,7 @@
                                         </li>
                                         <li><hr class="dropdown-divider"></li>
                                     @empty
-                                        <li><span class="dropdown-item-text text-muted">Tidak ada notifikasi</span></li>
+                                        <li class="empty-notif"><span class="dropdown-item-text text-muted">Tidak ada notifikasi</span></li>
                                     @endforelse
                                 </ul>
                             </div>
@@ -442,6 +442,19 @@
                         <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
                     </div>
                 @endif
+
+                <!-- Toast Container for Real-time Notifications -->
+                <div class="toast-container position-fixed bottom-0 end-0 p-3" style="z-index: 1100">
+                    <div id="realtimeToast" class="toast align-items-center text-white bg-primary border-0" role="alert" aria-live="assertive" aria-atomic="true">
+                        <div class="d-flex">
+                            <div class="toast-body">
+                                <strong id="toastTitle">Notifikasi Baru</strong><br>
+                                <span id="toastMessage">Ada pembaruan status pesanan Anda.</span>
+                            </div>
+                            <button type="button" class="btn-close btn-close-white me-2 m-auto" data-bs-dismiss="toast" aria-label="Close"></button>
+                        </div>
+                    </div>
+                </div>
                 
                 <!-- Page Content -->
                 <main class="pb-5 page-transition">
@@ -529,6 +542,77 @@
     </script>
     
     @stack('scripts')
+
+    <!-- Real-time Notification Script -->
+    @auth
+    <script>
+        document.addEventListener('DOMContentLoaded', function() {
+            let lastNotifCount = parseInt(document.getElementById('notifBadge').innerText) || 0;
+            const notifList = document.getElementById('notifList');
+            const toastEl = document.getElementById('realtimeToast');
+            const bsToast = new bootstrap.Toast(toastEl, { delay: 5000 });
+
+            function checkNotifications() {
+                fetch('{{ route("notifications.unread") }}', {
+                    headers: { 'Accept': 'application/json' }
+                })
+                .then(response => response.json())
+                .then(data => {
+                    const currentCount = data.count;
+                    document.getElementById('notifBadge').innerText = currentCount;
+                    
+                    if (currentCount > lastNotifCount && data.notifications.length > 0) {
+                        // We have a new notification! Show toast for the first new one
+                        const newest = data.notifications[0];
+                        document.getElementById('toastTitle').innerText = newest.judul;
+                        document.getElementById('toastMessage').innerText = newest.pesan;
+                        bsToast.show();
+                        
+                        // Update the dropdown list HTML
+                        let html = '';
+                        data.notifications.forEach(notif => {
+                            html += `
+                                <li data-notif-id="${notif.notifikasi_id}">
+                                    <div class="dropdown-item-text">
+                                        <strong>${notif.judul}</strong>
+                                        <p class="mb-0 small text-muted">${notif.pesan}</p>
+                                        <small class="text-muted">Baru saja</small>
+                                    </div>
+                                </li>
+                                <li><hr class="dropdown-divider"></li>
+                            `;
+                        });
+                        notifList.innerHTML = html;
+                    } else if (currentCount === 0) {
+                        notifList.innerHTML = '<li class="empty-notif"><span class="dropdown-item-text text-muted">Tidak ada notifikasi</span></li>';
+                    }
+                    
+                    lastNotifCount = currentCount;
+                })
+                .catch(error => console.error('Error fetching notifications:', error));
+            }
+
+            // Poll every 15 seconds
+            setInterval(checkNotifications, 15000);
+            
+            // Mark as read when clicking dropdown toggle
+            document.getElementById('notifDropdownToggle').addEventListener('click', function() {
+                if (lastNotifCount > 0) {
+                    fetch('{{ route("notifications.read-all") }}', {
+                        method: 'POST',
+                        headers: {
+                            'X-CSRF-TOKEN': document.querySelector('meta[name="csrf-token"]').getAttribute('content'),
+                            'Accept': 'application/json'
+                        }
+                    }).then(() => {
+                        document.getElementById('notifBadge').innerText = '0';
+                        lastNotifCount = 0;
+                    });
+                }
+            });
+        });
+    </script>
+    @endauth
     
     <!-- Profile Modal -->
     @auth

@@ -43,6 +43,13 @@ Route::middleware('guest')->group(function () {
 
 Route::post('/logout', [LoginController::class, 'logout'])->name('logout')->middleware('auth');
 
+// AJAX Notifications Routes
+Route::middleware('auth')->group(function () {
+    Route::get('/api/notifications/unread', [\App\Http\Controllers\NotificationController::class, 'unread'])->name('notifications.unread');
+    Route::post('/api/notifications/{id}/read', [\App\Http\Controllers\NotificationController::class, 'markAsRead'])->name('notifications.read');
+    Route::post('/api/notifications/read-all', [\App\Http\Controllers\NotificationController::class, 'markAllAsRead'])->name('notifications.read-all');
+});
+
 // Invoice Route (Accessible by all roles, authorized inside controller)
 Route::get('/pesanan/{id}/invoice', [\App\Http\Controllers\InvoiceController::class, 'show'])
     ->middleware('auth')
