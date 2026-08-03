@@ -60,7 +60,7 @@ $envConfig = [
 
 foreach ($envConfig as $key => $value) {
     // For serverless drivers, always force the safe value
-    $forceKeys = ['SESSION_DRIVER', 'CACHE_STORE', 'LOG_CHANNEL', 'QUEUE_CONNECTION', 'DB_SSLMODE'];
+    $forceKeys = ['SESSION_DRIVER', 'CACHE_STORE', 'LOG_CHANNEL', 'QUEUE_CONNECTION', 'DB_SSLMODE', 'APP_DEBUG'];
     if (in_array($key, $forceKeys) || !getenv($key)) {
         putenv("$key=$value");
         $_ENV[$key] = $value;
@@ -70,17 +70,17 @@ foreach ($envConfig as $key => $value) {
 
 // Build Neon-compatible DB_URL with endpoint ID + SSL
 // Needed because Vercel's libpq doesn't support SNI for endpoint routing
-if (!getenv('DB_URL')) {
-    $dbUser = getenv('DB_USERNAME') ?: 'neondb_owner';
-    $dbPass = getenv('DB_PASSWORD') ?: 'npg_k1LtrzsfC2En';
-    $dbHost = getenv('DB_HOST') ?: 'ep-bold-wind-axkutgxv.c-4.us-east-2.aws.neon.tech';
-    $dbName = getenv('DB_DATABASE') ?: 'neondb';
-    $endpointId = explode('.', $dbHost)[0]; // e.g. ep-bold-wind-axkutgxv
-    $neonUrl = "pgsql://{$dbUser}:" . rawurlencode($dbPass) . "@{$dbHost}:5432/{$dbName}?sslmode=require&options=endpoint%3D{$endpointId}";
-    putenv("DB_URL={$neonUrl}");
-    $_ENV['DB_URL'] = $neonUrl;
-    $_SERVER['DB_URL'] = $neonUrl;
-}
+$dbUser = getenv('DB_USERNAME') ?: 'neondb_owner';
+$dbPass = getenv('DB_PASSWORD') ?: 'npg_k1LtrzsfC2En';
+$dbHost = getenv('DB_HOST') ?: 'ep-bold-wind-axkutgxv.c-4.us-east-2.aws.neon.tech';
+$dbName = getenv('DB_DATABASE') ?: 'neondb';
+$endpointId = explode('.', $dbHost)[0]; // e.g. ep-bold-wind-axkutgxv
+
+// Force overwrite DB_URL to guarantee our endpoint parameter and sslmode are passed
+$neonUrl = "pgsql://{$dbUser}:" . rawurlencode($dbPass) . "@{$dbHost}:5432/{$dbName}?sslmode=require&options=endpoint%3D{$endpointId}";
+putenv("DB_URL={$neonUrl}");
+$_ENV['DB_URL'] = $neonUrl;
+$_SERVER['DB_URL'] = $neonUrl;
 
 // ============================================================
 // BOOTSTRAP LARAVEL

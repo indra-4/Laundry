@@ -96,6 +96,10 @@ return [
             'prefix_indexes' => true,
             'search_path' => 'public',
             'sslmode' => env('DB_SSLMODE', 'prefer'),
+            'options' => [
+                // Set the endpoint ID for Neon serverless PostgreSQL when SNI is not supported by libpq
+                \PDO::PGSQL_ATTR_DISABLE_PREPARES => true, // Neon pooler compatibility
+            ] + (env('DB_HOST') ? ['endpoint' => explode('.', env('DB_HOST'))[0]] : []),
         ],
 
         'sqlsrv' => [
