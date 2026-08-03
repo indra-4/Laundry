@@ -31,15 +31,14 @@ foreach ([
 // ============================================================
 // ENVIRONMENT VARIABLES
 // Priority: Vercel dashboard env vars > these hardcoded defaults
-// Only sets a value if it's not already defined by Vercel
+// These ensure Laravel can boot on Vercel even if dashboard envs are missing
 // ============================================================
+$currentHost = $_SERVER['HTTP_HOST'] ?? 'laundry-ashen-two.vercel.app';
 $envConfig = [
-    // App
     'APP_NAME'             => 'AwnLaundry',
     'APP_ENV'              => 'production',
     'APP_KEY'              => 'base64:Cjbl2K4OKyEvi9rkoLAhERaHjgFDxAkB4Pg3E2Dpl+U=',
-    'APP_DEBUG'            => 'true',
-    'APP_URL'              => 'https://laundry-ashen-two.vercel.app',
+    'APP_URL'              => 'https://' . $currentHost,
     // Database (Neon PostgreSQL)
     'DB_CONNECTION'        => 'pgsql',
     'DB_HOST'              => 'ep-bold-wind-axkutgxv.c-4.us-east-2.aws.neon.tech',
@@ -47,9 +46,8 @@ $envConfig = [
     'DB_DATABASE'          => 'neondb',
     'DB_USERNAME'          => 'neondb_owner',
     'DB_PASSWORD'          => 'npg_k1LtrzsfC2En',
-    'DB_SSLMODE'           => 'require',
-    // Serverless-compatible drivers (FORCED — these must not use file/database on Vercel)
-    'SESSION_DRIVER'       => 'cookie',
+    // Serverless-compatible drivers (FORCED — these must not use file on Vercel)
+    'SESSION_DRIVER'       => 'database', // Changed from cookie to database to avoid 419 limits
     'CACHE_STORE'          => 'array',
     'LOG_CHANNEL'          => 'stderr',
     'QUEUE_CONNECTION'     => 'sync',
