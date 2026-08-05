@@ -547,10 +547,11 @@
     @auth
     <script>
         document.addEventListener('DOMContentLoaded', function() {
-            let lastNotifCount = parseInt(document.getElementById('notifBadge').innerText) || 0;
+            let badgeEl = document.getElementById('notifBadge');
+            let lastNotifCount = badgeEl ? (parseInt(badgeEl.innerText) || 0) : 0;
             const notifList = document.getElementById('notifList');
             const toastEl = document.getElementById('realtimeToast');
-            const bsToast = new bootstrap.Toast(toastEl, { delay: 5000 });
+            const bsToast = toastEl ? new bootstrap.Toast(toastEl, { delay: 5000 }) : null;
 
             function checkNotifications() {
                 fetch('{{ route("notifications.unread") }}', {
@@ -558,32 +559,41 @@
                 })
                 .then(response => response.json())
                 .then(data => {
-                    const currentCount = data.count;
-                    document.getElementById('notifBadge').innerText = currentCount;
+                    const currentCount = data.count || 0;
+                    if (badgeEl) badgeEl.innerText = currentCount;
                     
-                    if (currentCount > lastNotifCount && data.notifications.length > 0) {
+                    if (currentCount > lastNotifCount && data.notifications && data.notifications.length > 0) {
                         // We have a new notification! Show toast for the first new one
                         const newest = data.notifications[0];
-                        document.getElementById('toastTitle').innerText = newest.judul;
-                        document.getElementById('toastMessage').innerText = newest.pesan;
-                        bsToast.show();
+                        const title = newest.judul || newest.title || 'Notifikasi Baru';
+                        const message = newest.pesan || newest.message || 'Ada pembaruan status pesanan.';
+                        
+                        if (document.getElementById('toastTitle')) {
+                            document.getElementById('toastTitle').innerText = title;
+                            document.getElementById('toastMessage').innerText = message;
+                            if (bsToast) bsToast.show();
+                        }
                         
                         // Update the dropdown list HTML
-                        let html = '';
-                        data.notifications.forEach(notif => {
-                            html += `
-                                <li data-notif-id="${notif.notifikasi_id}">
-                                    <div class="dropdown-item-text">
-                                        <strong>${notif.judul}</strong>
-                                        <p class="mb-0 small text-muted">${notif.pesan}</p>
-                                        <small class="text-muted">Baru saja</small>
-                                    </div>
-                                </li>
-                                <li><hr class="dropdown-divider"></li>
-                            `;
-                        });
-                        notifList.innerHTML = html;
-                    } else if (currentCount === 0) {
+                        if (notifList) {
+                            let html = '';
+                            data.notifications.forEach(notif => {
+                                const nTitle = notif.judul || notif.title || 'Informasi';
+                                const nMessage = notif.pesan || notif.message || 'Anda memiliki pemberitahuan baru.';
+                                html += `
+                                    <li data-notif-id="${notif.notifikasi_id || ''}">
+                                        <div class="dropdown-item-text">
+                                            <strong>${nTitle}</strong>
+                                            <p class="mb-0 small text-muted">${nMessage}</p>
+                                            <small class="text-muted">Baru saja</small>
+                                        </div>
+                                    </li>
+                                    <li><hr class="dropdown-divider"></li>
+                                `;
+                            });
+                            notifList.innerHTML = html;
+                        }
+                    } else if (currentCount === 0 && notifList) {
                         notifList.innerHTML = '<li class="empty-notif"><span class="dropdown-item-text text-muted">Tidak ada notifikasi</span></li>';
                     }
                     
@@ -596,20 +606,23 @@
             setInterval(checkNotifications, 15000);
             
             // Mark as read when clicking dropdown toggle
-            document.getElementById('notifDropdownToggle').addEventListener('click', function() {
-                if (lastNotifCount > 0) {
-                    fetch('{{ route("notifications.read-all") }}', {
-                        method: 'POST',
-                        headers: {
-                            'X-CSRF-TOKEN': document.querySelector('meta[name="csrf-token"]').getAttribute('content'),
-                            'Accept': 'application/json'
-                        }
-                    }).then(() => {
-                        document.getElementById('notifBadge').innerText = '0';
-                        lastNotifCount = 0;
-                    });
-                }
-            });
+            const dropdownToggle = document.getElementById('notifDropdownToggle');
+            if (dropdownToggle) {
+                dropdownToggle.addEventListener('click', function() {
+                    if (lastNotifCount > 0) {
+                        fetch('{{ route("notifications.read-all") }}', {
+                            method: 'POST',
+                            headers: {
+                                'X-CSRF-TOKEN': document.querySelector('meta[name="csrf-token"]').getAttribute('content'),
+                                'Accept': 'application/json'
+                            }
+                        }).then(() => {
+                            if (badgeEl) badgeEl.innerText = '0';
+                            lastNotifCount = 0;
+                        });
+                    }
+                });
+            }
         });
     </script>
     @endauth
