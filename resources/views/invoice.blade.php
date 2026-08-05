@@ -79,10 +79,12 @@
                 </div>
                 <div class="col-sm-6 text-end">
                     <h6 class="fw-bold text-muted mb-1">Status Pembayaran:</h6>
-                    @if($pesanan->pembayaran && $pesanan->pembayaran->status === 'lunas')
-                        <h4 class="text-success fw-bold border border-success d-inline-block px-3 py-1 rounded">LUNAS</h4>
+                    @if($pesanan->pembayaran && $pesanan->pembayaran->status === 'berhasil')
+                        <h4 class="text-success fw-bold border border-success d-inline-block px-3 py-1 rounded">SUDAH DIBAYAR / LUNAS</h4>
+                    @elseif($pesanan->pembayaran && $pesanan->pembayaran->status === 'menunggu')
+                        <h4 class="text-warning fw-bold border border-warning d-inline-block px-3 py-1 rounded">MENUNGGU KONFIRMASI</h4>
                     @else
-                        <h4 class="text-danger fw-bold border border-danger d-inline-block px-3 py-1 rounded">BELUM LUNAS</h4>
+                        <h4 class="text-danger fw-bold border border-danger d-inline-block px-3 py-1 rounded">BELUM DIBAYAR</h4>
                     @endif
                 </div>
             </div>
