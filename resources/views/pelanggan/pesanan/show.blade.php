@@ -90,17 +90,19 @@
                     <div class="col-7">Rp {{ number_format($pesanan->pembayaran->jumlah, 0, ',', '.') }}</div>
                 </div>
                 @if($pesanan->pembayaran->bukti_transfer)
-                <div class="row mt-3">
-                    <div class="col-12 text-center">
-                        @if(str_starts_with($pesanan->pembayaran->bukti_transfer, 'data:image'))
-                            <img src="{{ $pesanan->pembayaran->bukti_transfer }}" class="img-fluid rounded border mb-2" style="max-height: 200px; object-fit: contain;" alt="Bukti Transfer">
+                    @php
+                        $bukti = trim($pesanan->pembayaran->bukti_transfer);
+                        $isBase64 = str_starts_with($bukti, 'data:image') || str_contains($bukti, ';base64,');
+                    @endphp
+                    <div class="mt-2">
+                        @if($isBase64)
+                            <img src="{{ $bukti }}" class="img-fluid rounded border mb-2" style="max-height: 200px; object-fit: contain;" alt="Bukti Transfer">
                         @else
                             <a href="{{ Storage::url($pesanan->pembayaran->bukti_transfer) }}" target="_blank" class="btn btn-sm btn-outline-info">
-                                <i class="bi bi-image"></i> Lihat Bukti Transfer
+                                <i class="bi bi-eye"></i> Lihat Bukti Transfer
                             </a>
                         @endif
                     </div>
-                </div>
                 @endif
             </div>
         </div>

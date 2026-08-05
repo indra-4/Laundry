@@ -55,15 +55,19 @@
             <div class="card-body">
                 <p class="small text-muted mb-2">Pelanggan telah melakukan pembayaran via <strong>{{ strtoupper($pesanan->pembayaran->metode_pembayaran) }}</strong> sebesar <strong>Rp {{ number_format($pesanan->pembayaran->jumlah, 0, ',', '.') }}</strong>.</p>
                 @if($pesanan->pembayaran->bukti_transfer)
-                <div class="mb-3 text-center">
-                    @if(str_starts_with($pesanan->pembayaran->bukti_transfer, 'data:image'))
-                        <img src="{{ $pesanan->pembayaran->bukti_transfer }}" class="img-fluid rounded border mb-2" style="max-height: 200px; object-fit: contain;" alt="Bukti Transfer">
+                    @php
+                        $bukti = trim($pesanan->pembayaran->bukti_transfer);
+                        $isBase64 = str_starts_with($bukti, 'data:image') || str_contains($bukti, ';base64,');
+                    @endphp
+                    <div class="mt-2">
+                    @if($isBase64)
+                        <img src="{{ $bukti }}" class="img-fluid rounded border mb-2" style="max-height: 200px; object-fit: contain;" alt="Bukti Transfer">
                     @else
                         <a href="{{ Storage::url($pesanan->pembayaran->bukti_transfer) }}" target="_blank" class="btn btn-sm btn-outline-info">
-                            <i class="bi bi-image"></i> Lihat Bukti Transfer (Legacy)
+                            <i class="bi bi-eye"></i> Lihat Bukti Transfer
                         </a>
                     @endif
-                </div>
+                    </div>
                 @endif
                 <form method="POST" action="{{ route('karyawan.pesanan.konfirmasi-pembayaran', $pesanan->pesanan_id) }}">
                     @csrf
