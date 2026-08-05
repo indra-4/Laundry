@@ -68,8 +68,8 @@
                         <td>
                             <form method="POST" action="{{ route('karyawan.proses.checklist', $p->proses_id) }}" class="d-inline">
                                 @csrf
-                                <button type="submit" class="btn btn-sm btn-success" 
-                                        onclick="return confirm('Yakin proses {{ $tahapanLabels[$p->tahapan] ?? $p->tahapan }} sudah selesai?')">
+                                <button type="submit" class="btn btn-success btn-sm w-100" 
+                                        data-confirm="Yakin proses {{ $tahapanLabels[$p->tahapan] ?? $p->tahapan }} sudah selesai?">
                                     <i class="bi bi-check-circle"></i> Selesai
                                 </button>
                             </form>

@@ -627,6 +627,73 @@
     </script>
     @endauth
     
+    <!-- SweetAlert2 -->
+    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+    <script>
+        document.addEventListener('DOMContentLoaded', function() {
+            // Global SweetAlert confirmation for elements with data-confirm
+            document.querySelectorAll('[data-confirm]').forEach(el => {
+                const message = el.getAttribute('data-confirm');
+                
+                if (el.tagName.toLowerCase() === 'form') {
+                    el.addEventListener('submit', function(e) {
+                        e.preventDefault();
+                        const form = this;
+                        
+                        Swal.fire({
+                            title: 'Konfirmasi',
+                            text: message,
+                            icon: 'warning',
+                            showCancelButton: true,
+                            confirmButtonColor: '#3085d6',
+                            cancelButtonColor: '#d33',
+                            confirmButtonText: 'Ya, Lanjutkan!',
+                            cancelButtonText: 'Batal'
+                        }).then((result) => {
+                            if (result.isConfirmed) {
+                                // temporarily remove data-confirm to avoid loop, and submit
+                                form.removeAttribute('data-confirm');
+                                form.submit();
+                            }
+                        });
+                    });
+                } else if (el.tagName.toLowerCase() === 'button' || el.tagName.toLowerCase() === 'a') {
+                    el.addEventListener('click', function(e) {
+                        e.preventDefault();
+                        const btn = this;
+                        
+                        Swal.fire({
+                            title: 'Konfirmasi',
+                            text: message,
+                            icon: 'warning',
+                            showCancelButton: true,
+                            confirmButtonColor: '#3085d6',
+                            cancelButtonColor: '#d33',
+                            confirmButtonText: 'Ya, Lanjutkan!',
+                            cancelButtonText: 'Batal'
+                        }).then((result) => {
+                            if (result.isConfirmed) {
+                                if (btn.tagName.toLowerCase() === 'button' && btn.type === 'submit' && btn.form) {
+                                    if (btn.name) {
+                                        const hiddenInput = document.createElement('input');
+                                        hiddenInput.type = 'hidden';
+                                        hiddenInput.name = btn.name;
+                                        hiddenInput.value = btn.value;
+                                        btn.form.appendChild(hiddenInput);
+                                    }
+                                    btn.removeAttribute('data-confirm');
+                                    btn.form.submit();
+                                } else if (btn.tagName.toLowerCase() === 'a' && btn.href) {
+                                    window.location.href = btn.href;
+                                }
+                            }
+                        });
+                    });
+                }
+            });
+        });
+    </script>
+    
     <!-- Profile Modal -->
     @auth
     <div class="modal fade" id="profileModal" tabindex="-1" aria-labelledby="profileModalLabel" aria-hidden="true">

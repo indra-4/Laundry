@@ -50,7 +50,7 @@
                             </a>
                             <form action="{{ route('pemilik.layanan.destroy', $item->layanan_id) }}" 
                                   method="POST" class="d-inline" 
-                                  onsubmit="return confirm('Yakin hapus layanan ini?')">
+                                  data-confirm="Yakin hapus layanan ini?">
                                 @csrf
                                 @method('DELETE')
                                 <button type="submit" class="btn btn-sm btn-danger">

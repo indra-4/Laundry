@@ -68,10 +68,10 @@
                 <form method="POST" action="{{ route('karyawan.pesanan.konfirmasi-pembayaran', $pesanan->pesanan_id) }}">
                     @csrf
                     <div class="d-flex gap-2">
-                        <button type="submit" name="status" value="berhasil" class="btn btn-success flex-grow-1" onclick="return confirm('Konfirmasi bahwa dana sudah masuk?')">
+                        <button type="submit" name="status" value="berhasil" class="btn btn-success flex-grow-1" data-confirm="Konfirmasi bahwa dana sudah masuk?">
                             <i class="bi bi-check-circle"></i> Terima
                         </button>
-                        <button type="submit" name="status" value="gagal" class="btn btn-danger flex-grow-1" onclick="return confirm('Tolak pembayaran ini?')">
+                        <button type="submit" name="status" value="gagal" class="btn btn-danger flex-grow-1" data-confirm="Tolak pembayaran ini?">
                             <i class="bi bi-x-circle"></i> Tolak
                         </button>
                     </div>

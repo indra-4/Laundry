@@ -37,7 +37,7 @@
                         </td>
                         <td>
                             <a href="{{ route('pemilik.karyawan.edit', $u->id) }}" class="btn btn-sm btn-warning">Edit</a>
-                            <form action="{{ route('pemilik.karyawan.destroy', $u->id) }}" method="POST" class="d-inline" onsubmit="return confirm('Hapus data ini?')">
+                            <form action="{{ route('pemilik.karyawan.destroy', $u->id) }}" method="POST" class="d-inline" data-confirm="Hapus data ini?">
                                 @csrf
                                 @method('DELETE')
                                 <button class="btn btn-sm btn-danger">Hapus</button>
