@@ -562,19 +562,21 @@
                     const currentCount = data.count || 0;
                     if (badgeEl) badgeEl.innerText = currentCount;
                     
-                    if (currentCount > lastNotifCount && data.notifications && data.notifications.length > 0) {
-                        // We have a new notification! Show toast for the first new one
-                        const newest = data.notifications[0];
-                        const title = newest.judul || newest.title || 'Notifikasi Baru';
-                        const message = newest.pesan || newest.message || 'Ada pembaruan status pesanan.';
-                        
-                        if (document.getElementById('toastTitle')) {
-                            document.getElementById('toastTitle').innerText = title;
-                            document.getElementById('toastMessage').innerText = message;
-                            if (bsToast) bsToast.show();
+                    if (currentCount !== lastNotifCount && data.notifications && data.notifications.length > 0) {
+                        // Check if we need to show toast (only if it increased)
+                        if (currentCount > lastNotifCount) {
+                            const newest = data.notifications[0];
+                            const title = newest.judul || newest.title || 'Notifikasi Baru';
+                            const message = newest.pesan || newest.message || 'Ada pembaruan status pesanan.';
+                            
+                            if (document.getElementById('toastTitle')) {
+                                document.getElementById('toastTitle').innerText = title;
+                                document.getElementById('toastMessage').innerText = message;
+                                if (bsToast) bsToast.show();
+                            }
                         }
                         
-                        // Update the dropdown list HTML
+                        // Always update the dropdown list HTML when count changes
                         if (notifList) {
                             let html = '';
                             data.notifications.forEach(notif => {
@@ -610,16 +612,21 @@
             if (dropdownToggle) {
                 dropdownToggle.addEventListener('click', function() {
                     if (lastNotifCount > 0) {
+                        // Optimistically update UI
+                        if (badgeEl) badgeEl.innerText = '0';
+                        lastNotifCount = 0;
+                        
+                        // Use GET to avoid CSRF issues on ephemeral Vercel sessions
                         fetch('{{ route("notifications.read-all") }}', {
-                            method: 'POST',
+                            method: 'GET',
                             headers: {
-                                'X-CSRF-TOKEN': document.querySelector('meta[name="csrf-token"]').getAttribute('content'),
                                 'Accept': 'application/json'
                             }
-                        }).then(() => {
-                            if (badgeEl) badgeEl.innerText = '0';
-                            lastNotifCount = 0;
-                        });
+                        }).then(response => {
+                            if (!response.ok) {
+                                console.error("Failed to mark notifications as read");
+                            }
+                        }).catch(err => console.error(err));
                     }
                 });
             }
