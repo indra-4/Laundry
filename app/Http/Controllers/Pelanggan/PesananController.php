@@ -135,7 +135,9 @@ class PesananController extends Controller
             $buktiPath = null;
             
             if ($request->hasFile('bukti_transfer')) {
-                $buktiPath = $request->file('bukti_transfer')->store('bukti-pembayaran', 'public');
+                $file = $request->file('bukti_transfer');
+                // Convert to base64 so it persists on Serverless environments like Vercel
+                $buktiPath = 'data:image/' . $file->getClientOriginalExtension() . ';base64,' . base64_encode(file_get_contents($file));
             }
 
             Pembayaran::updateOrCreate(
