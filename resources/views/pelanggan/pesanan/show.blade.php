@@ -98,9 +98,9 @@
                         @if($isBase64)
                             <img src="{{ $bukti }}" class="img-fluid rounded border mb-2" style="max-height: 200px; object-fit: contain;" alt="Bukti Transfer">
                         @else
-                            <a href="{{ Storage::url($pesanan->pembayaran->bukti_transfer) }}" target="_blank" class="btn btn-sm btn-outline-info">
-                                <i class="bi bi-eye"></i> Lihat Bukti Transfer
-                            </a>
+                            <div class="alert alert-warning py-2 small mb-0">
+                                <i class="bi bi-info-circle"></i> Bukti transfer lama (sebelum update sistem) tidak dapat ditampilkan di server Vercel.
+                            </div>
                         @endif
                     </div>
                 @endif
