@@ -53,7 +53,16 @@
     <div class="container">
         <div class="text-end mt-4 mb-2 no-print">
             <button onclick="window.print()" class="btn btn-primary"><i class="bi bi-printer"></i> Cetak PDF</button>
-            <a href="javascript:history.back()" class="btn btn-secondary">Kembali</a>
+            @php
+                $backUrl = url()->previous();
+                if(auth()->check()) {
+                    $role = auth()->user()->role;
+                    if($role === 'pelanggan') $backUrl = route('pelanggan.pesanan.show', $pesanan->pesanan_id);
+                    elseif($role === 'karyawan') $backUrl = route('karyawan.pesanan.show', $pesanan->pesanan_id);
+                    elseif($role === 'pemilik') $backUrl = route('pemilik.pesanan.index');
+                }
+            @endphp
+            <a href="{{ $backUrl }}" class="btn btn-secondary">Kembali</a>
         </div>
 
         <div class="invoice-box">
