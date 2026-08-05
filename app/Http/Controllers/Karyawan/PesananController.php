@@ -148,4 +148,38 @@ class PesananController extends Controller
             return back()->with('error', 'Gagal update status: ' . $e->getMessage());
         }
     }
+
+    public function konfirmasiPembayaran(Request $request, $id)
+    {
+        $validated = $request->validate([
+            'status' => 'required|in:berhasil,gagal',
+        ]);
+
+        $pesanan = Pesanan::findOrFail($id);
+        
+        DB::beginTransaction();
+        try {
+            if ($pesanan->pembayaran) {
+                $pesanan->pembayaran->update([
+                    'status' => $validated['status']
+                ]);
+
+                // Notifikasi ke pelanggan
+                $statusText = $validated['status'] === 'berhasil' ? 'berhasil dikonfirmasi' : 'ditolak';
+                Notifikasi::create([
+                    'user_id' => $pesanan->pelanggan_id,
+                    'judul' => 'Informasi Pembayaran',
+                    'pesan' => "Pembayaran untuk pesanan {$pesanan->kode_booking} telah {$statusText}.",
+                    'tipe' => $validated['status'] === 'berhasil' ? 'success' : 'danger',
+                ]);
+            }
+
+            DB::commit();
+
+            return back()->with('success', 'Status pembayaran berhasil diupdate.');
+        } catch (\Exception $e) {
+            DB::rollBack();
+            return back()->with('error', 'Gagal update status pembayaran: ' . $e->getMessage());
+        }
+    }
 } 

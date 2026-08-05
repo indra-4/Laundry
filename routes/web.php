@@ -84,6 +84,7 @@ Route::middleware(['auth', 'role:karyawan'])->prefix('karyawan')->name('karyawan
     Route::get('/pesanan/{id}', [KaryawanPesananController::class, 'show'])->name('pesanan.show');
     Route::post('/pesanan/{id}/timbang', [KaryawanPesananController::class, 'timbang'])->name('pesanan.timbang');
     Route::post('/pesanan/{id}/update-status', [KaryawanPesananController::class, 'updateStatus'])->name('pesanan.update-status');
+    Route::post('/pesanan/{id}/konfirmasi-pembayaran', [KaryawanPesananController::class, 'konfirmasiPembayaran'])->name('pesanan.konfirmasi-pembayaran');
     
     // Proses Laundry
     Route::get('/proses', [ProsesController::class, 'index'])->name('proses.index');

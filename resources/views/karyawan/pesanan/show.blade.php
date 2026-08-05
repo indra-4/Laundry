@@ -47,6 +47,35 @@
     </div>
 
     <div class="col-md-4">
+        @if($pesanan->pembayaran && $pesanan->pembayaran->status === 'menunggu')
+        <div class="card mb-3 border-warning">
+            <div class="card-header bg-warning text-dark">
+                <h6 class="mb-0"><i class="bi bi-wallet2"></i> Konfirmasi Pembayaran</h6>
+            </div>
+            <div class="card-body">
+                <p class="small text-muted mb-2">Pelanggan telah melakukan pembayaran via <strong>{{ strtoupper($pesanan->pembayaran->metode_pembayaran) }}</strong> sebesar <strong>Rp {{ number_format($pesanan->pembayaran->jumlah, 0, ',', '.') }}</strong>.</p>
+                @if($pesanan->pembayaran->bukti_transfer)
+                <div class="mb-3 text-center">
+                    <a href="{{ Storage::url($pesanan->pembayaran->bukti_transfer) }}" target="_blank" class="btn btn-sm btn-outline-info">
+                        <i class="bi bi-image"></i> Lihat Bukti Transfer
+                    </a>
+                </div>
+                @endif
+                <form method="POST" action="{{ route('karyawan.pesanan.konfirmasi-pembayaran', $pesanan->pesanan_id) }}">
+                    @csrf
+                    <div class="d-flex gap-2">
+                        <button type="submit" name="status" value="berhasil" class="btn btn-success flex-grow-1" onclick="return confirm('Konfirmasi bahwa dana sudah masuk?')">
+                            <i class="bi bi-check-circle"></i> Terima
+                        </button>
+                        <button type="submit" name="status" value="gagal" class="btn btn-danger flex-grow-1" onclick="return confirm('Tolak pembayaran ini?')">
+                            <i class="bi bi-x-circle"></i> Tolak
+                        </button>
+                    </div>
+                </form>
+            </div>
+        </div>
+        @endif
+
         <div class="card">
             <div class="card-header">
                 <h6>Update Status</h6>
