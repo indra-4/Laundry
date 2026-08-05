@@ -27,9 +27,9 @@
                     <div class="col-8">
                         {{ $pengantaran->alamat }}
                         <br>
-                        <a href="https://www.openstreetmap.org/search?q={{ urlencode($pengantaran->alamat) }}" 
+                        <a href="https://www.google.com/maps/search/?api=1&query={{ urlencode($pengantaran->alamat) }}" 
                            target="_blank" class="btn btn-sm btn-outline-primary mt-2">
-                            <i class="bi bi-geo-alt"></i> Buka di Peta
+                            <i class="bi bi-geo-alt"></i> Buka di Google Maps
                         </a>
                     </div>
                 </div>
@@ -234,29 +234,42 @@
                         </div>
                     `).openPopup();
                 } else {
-                    // Jika geocoding gagal, tampilkan pesan
-                    document.getElementById("map").innerHTML = `
-                        <div class="p-4 text-center">
-                            <i class="bi bi-exclamation-triangle text-warning" style="font-size: 2rem;"></i>
-                            <p class="mt-2">Tidak dapat menemukan lokasi untuk alamat ini.</p>
-                            <p class="text-muted small">${address}</p>
-                            <a href="https://www.openstreetmap.org/search?q=${encodeURIComponent(address)}" 
-                               target="_blank" class="btn btn-primary mt-2">
-                                <i class="bi bi-geo-alt"></i> Cari di OpenStreetMap
+                    // Jika geocoding gagal, tetap tampilkan map default
+                    const fallbackLat = -6.200000;
+                    const fallbackLon = 106.816666;
+                    map.setView([fallbackLat, fallbackLon], 10);
+                    
+                    const marker = L.marker([fallbackLat, fallbackLon]).addTo(map);
+                    marker.bindPopup(`
+                        <div style="min-width: 200px;" class="text-center">
+                            <i class="bi bi-exclamation-triangle text-warning fs-4"></i><br>
+                            <strong>Lokasi tidak ditemukan akurat di Peta Leaflet</strong><br>
+                            <small class="text-muted">${address}</small><br>
+                            <a href="https://www.google.com/maps/search/?api=1&query=${encodeURIComponent(address)}" 
+                               target="_blank" class="btn btn-sm btn-primary mt-2 d-inline-block" style="text-decoration: none;">
+                                <i class="bi bi-geo-alt"></i> Buka Google Maps
                             </a>
                         </div>
-                    `;
+                    `).openPopup();
                 }
             })
             .catch(error => {
                 console.error('Error geocoding:', error);
                 // Fallback: tampilkan peta default dengan marker di tengah
-                const marker = L.marker([-6.200000, 106.816666]).addTo(map);
+                const fallbackLat = -6.200000;
+                const fallbackLon = 106.816666;
+                map.setView([fallbackLat, fallbackLon], 10);
+                
+                const marker = L.marker([fallbackLat, fallbackLon]).addTo(map);
                 marker.bindPopup(`
-                    <div>
-                        <strong>Alamat Pengantaran</strong><br>
-                        ${address}<br>
-                        <small class="text-muted">Lokasi tidak dapat ditentukan secara otomatis</small>
+                    <div style="min-width: 200px;" class="text-center">
+                        <i class="bi bi-exclamation-triangle text-warning fs-4"></i><br>
+                        <strong>Gagal memuat koordinat Peta</strong><br>
+                        <small class="text-muted">${address}</small><br>
+                        <a href="https://www.google.com/maps/search/?api=1&query=${encodeURIComponent(address)}" 
+                           target="_blank" class="btn btn-sm btn-primary mt-2 d-inline-block" style="text-decoration: none;">
+                            <i class="bi bi-geo-alt"></i> Buka Google Maps
+                        </a>
                     </div>
                 `).openPopup();
             });
