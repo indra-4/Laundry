@@ -98,6 +98,7 @@
                         <option value="dikemas">Dikemas</option>
                         <option value="siap_antar">Siap Antar</option>
                         <option value="selesai">Selesai</option>
+                        <option value="dibatalkan">Batalkan Pesanan</option>
                     </select>
                     <button type="submit" class="btn btn-primary w-100">
                         <i class="bi bi-arrow-up-circle"></i> Update

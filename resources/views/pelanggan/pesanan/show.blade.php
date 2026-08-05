@@ -80,7 +80,7 @@
                 <div class="row mb-2">
                     <div class="col-5"><strong>Status:</strong></div>
                     <div class="col-7">
-                        <span class="badge bg-{{ $pesanan->pembayaran->status == 'berhasil' ? 'success' : 'warning' }}">
+                        <span class="badge bg-{{ $pesanan->pembayaran->status == 'berhasil' ? 'success' : ($pesanan->pembayaran->status == 'gagal' ? 'danger' : 'warning') }}">
                             {{ ucfirst($pesanan->pembayaran->status) }}
                         </span>
                     </div>
@@ -102,6 +102,17 @@
                                 <i class="bi bi-eye"></i> Lihat Bukti Transfer
                             </a>
                         @endif
+                    </div>
+                @endif
+                
+                @if($pesanan->pembayaran->status == 'gagal')
+                    <div class="mt-3 border-top pt-3">
+                        <div class="alert alert-danger py-2 mb-3">
+                            <i class="bi bi-exclamation-circle"></i> Pembayaran ditolak. Silakan unggah ulang bukti yang valid.
+                        </div>
+                        <a href="{{ route('pelanggan.pesanan.pembayaran', $pesanan->pesanan_id) }}" class="btn btn-warning w-100 fw-bold">
+                            <i class="bi bi-arrow-repeat"></i> Upload Ulang Pembayaran
+                        </a>
                     </div>
                 @endif
             </div>
